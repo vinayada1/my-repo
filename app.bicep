@@ -1,75 +1,20 @@
-import kubernetes as kubernetes {
-  kubeConfig: ''
-  namespace: 'default'
-}
+// Import the set of Radius resources (Applications.*) into Bicep
 import radius as radius
 
-@description('Specifies the location for resources.')
-param location string = 'local'
+@description('The app ID of your Radius Application. Set automatically by the rad CLI.')
+param application string
 
-@description('Specifies the environment for resources.')
-param environment string
-
-@description('Specifies the port for the container resource.')
-param port int = 3000
-
-@description('Specifies the image for the container resource.')
-param magpieimage string = 'ghcr.io/radius-project/magpiego:latest'
-
-@description('Specifies tls cert secret values.')
-@secure()
-param tlscrt string
-@secure()
-param tlskey string
-
-resource app 'Applications.Core/applications@2023-10-01-preview' = {
-  name: 'corerp-resources-gateway-sslpassthrough'
-  location: location
+resource demo2 'Applications.Core/containers@2023-10-01-preview' = {
+  name: 'demo2'
   properties: {
-    environment: environment
-  }
-}
-
-resource gateway 'Applications.Core/gateways@2023-10-01-preview' = {
-  name: 'ssl-gtwy-gtwy'
-  location: location
-  properties: {
-    application: app.id
-    tls: { 
-      sslPassthrough: true 
-    } 
-    routes: [
-      {
-        destination: 'https://${frontendContainer.name}:${frontendContainer.properties.container.ports.web.port}'
-      }
-    ]
-  }
-}
-
-resource frontendContainer 'Applications.Core/containers@2023-10-01-preview' = {
-  name: 'ssl-gtwy-front-ctnr'
-  location: location
-  properties: {
-    application: app.id
+    application: application
     container: {
-      image: magpieimage
-      env: {
-        TLS_KEY: tlskey
-        TLS_CERT: tlscrt
-      }
+      image: 'ghcr.io/radius-project/samples/demo:latest'
       ports: {
         web: {
-          containerPort: port
-          port: 443
+          containerPort: 3000
         }
-      }
-      readinessProbe: {
-        kind: 'tcp'
-        containerPort: port
       }
     }
   }
 }
-
-
-
