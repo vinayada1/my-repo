@@ -1,0 +1,9 @@
+# Ignore common configuration files that contain secrets alongside other data.
+# Comment these if you use them without storing secrets in them.
+.env
+.secrets
+
+# Ignore files that are often used to store secrets
+*.pem
+*.key
+.ssh/
