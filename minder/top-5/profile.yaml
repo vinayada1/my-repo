@@ -1,0 +1,24 @@
+version: v1
+type: profile
+name: custcodian-top-5
+display_name: Custcodian Top 5 Security Recommendations
+context:
+  provider: github
+alert: "off"
+remediate: "off"
+repository:
+  - type: default_branch_pr_required
+    def: {}
+  - type: release_tags_immutable
+    def: {}
+  - type: actions_check_pinned_tags
+    def: {}
+  - type: sast_semgrep
+    def: {}
+  - type: sca_dependabot
+    def:
+      schedule_interval: weekly
+  - type: actions_check_default_permissions
+    def:
+      contents: read
+      id_token: write
